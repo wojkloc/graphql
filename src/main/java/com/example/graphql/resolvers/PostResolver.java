@@ -14,6 +14,6 @@ public class PostResolver implements GraphQLResolver<Post> {
     private AuthorRepository authorRepository;
 
     public Author getAuthor(Post post) {
-        return authorRepository.getAuthor(post.getAuthorId()).orElseThrow(RuntimeException::new);
+        return authorRepository.getAuthorById(post.getAuthorId()).orElseThrow(RuntimeException::new);
     }
 }

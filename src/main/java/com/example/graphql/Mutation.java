@@ -1,7 +1,9 @@
 package com.example.graphql;
 
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
+import com.example.graphql.model.Author;
 import com.example.graphql.model.Post;
+import com.example.graphql.repository.AuthorRepository;
 import com.example.graphql.repository.PostRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,15 +14,23 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Mutation implements GraphQLMutationResolver {
     private PostRepository postRepository;
+    private AuthorRepository authorRepository;
 
+    public Post writePost(String title, String text, String category, String authorName, String authorThumbnail) {
 
-    public Post writePost(String title, String text, String category, String author) {
+        Author author = authorRepository.getAuthorByName(authorName).orElse(new Author());
+        if (author.getId() == null) {
+            author.setId(UUID.randomUUID().toString());
+            author.setName(authorName);
+            author.setThumbnail(authorThumbnail);
+            author = authorRepository.saveAuthor(author);
+        }
         Post post = new Post();
         post.setId(UUID.randomUUID().toString());
         post.setTitle(title);
         post.setText(text);
         post.setCategory(category);
-        post.setAuthorId(author);
+        post.setAuthorId(author.getId());
         postRepository.savePost(post);
 
         return post;
